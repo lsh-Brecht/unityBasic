@@ -30,7 +30,7 @@ public class Weapon : MonoBehaviour
         }
     }
     public void LevelUp(float damage, int count) {
-        this.damage = damage;
+        this.damage = damage * Character.Damage;
         this.count += count;
         if (id == 0)
             Locate();
@@ -44,8 +44,8 @@ public class Weapon : MonoBehaviour
 
         //Property
         id = data.itemId;
-        damage = data.baseDamage;
-        count = data.baseCount;
+        damage = data.baseDamage * Character.Damage;
+        count = data.baseCount + Character.Count;
         for(int i = 0; i < GameManager.instance.pool.prefabs.Length; i++) {
             if(data.projectile == GameManager.instance.pool.prefabs[i]) {
                 prefabId = i;
@@ -54,11 +54,11 @@ public class Weapon : MonoBehaviour
         }
         switch (id) {
             case 0:
-                speed = 150;
+                speed = 150 * Character.WeaponSpeed;
                 Locate();
                 break;
             default:
-                speed = 0.7f; //발사 주기
+                speed = 0.7f * Character.WeaponRate; ; //발사 주기
                 break;
         }
         //Hand Set

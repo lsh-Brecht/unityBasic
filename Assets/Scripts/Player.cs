@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
     public float speed;
     public Scanner scanner;
     public Hand[] hands;
+    public RuntimeAnimatorController[] animCon;
 
     Rigidbody2D rigid;
     SpriteRenderer spriteR;
@@ -19,6 +20,11 @@ public class Player : MonoBehaviour
         animator = GetComponent<Animator>();
         scanner = GetComponent<Scanner>(); //스크립트도 가져올 수 있음
         hands = GetComponentsInChildren<Hand>(true); //true 값을 주면 inactive된 오브젝트로 가져옴
+    }
+
+    private void OnEnable() {
+        speed *= Character.Speed;
+        animator.runtimeAnimatorController = animCon[GameManager.instance.playerId];
     }
 
     void Start()
@@ -62,6 +68,19 @@ public class Player : MonoBehaviour
         if (inputVec.x != 0)
         {
             spriteR.flipX = (inputVec.x < 0) ? true : false;
+        }
+    }
+
+    private void OnCollisionStay2D(Collision2D collision) {
+        if (!GameManager.instance.isLive) return;
+        GameManager.instance.health -= Time.deltaTime * 10;
+        // int형에서 float을 빼는 문제(health를 float으로 수정)
+        if (GameManager.instance.health <= 0) {
+            for (int i = 2; i < transform.childCount; i++) {
+                transform.GetChild(i).gameObject.SetActive(false);
+            }
+            animator.SetTrigger("Dead");
+            GameManager.instance.GameOver();
         }
     }
 }
