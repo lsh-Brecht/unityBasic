@@ -11,13 +11,19 @@ public class Reposition : MonoBehaviour
             return;
         Vector3 playerPos = GameManager.instance.player.transform.position;
         Vector3 myPos = transform.position;
-        float diffx = Mathf.Abs(playerPos.x - myPos.x);
-        float diffy = Mathf.Abs(playerPos.y - myPos.y);
-        Vector3 playerDir = GameManager.instance.player.inputVec;
-        float dirx = playerDir.x < 0 ? -1 : 1;
-        float diry = playerDir.y < 0 ? -1 : 1;
+
+        //Vector3 playerDir = GameManager.instance.player.inputVec;
+        //inputVector로 재배치하니 오류가 종종 발생.
+
         switch (transform.tag) {
             case "Ground":
+                //입력에 의존하지 않는 방식으로 구현됨
+                float diffy = playerPos.y - myPos.y;
+                float diffx = playerPos.x - myPos.x;
+                float dirx = diffx < 0 ? -1 : 1;
+                float diry = diffy < 0 ? -1 : 1;
+                diffx = Mathf.Abs(diffx);
+                diffy = Mathf.Abs(diffy);
                 if (diffx > diffy) {
                     transform.Translate(Vector3.right * dirx * 40);//(1,0,0) * dirx
                 }
@@ -26,8 +32,12 @@ public class Reposition : MonoBehaviour
                 }
                 break;
             case "Enemy":
+                //입력에 의존하지 않는 방식으로 구현됨
                 if (coll.enabled) {
-                    transform.Translate(playerDir * 30 + new Vector3(Random.Range(-3, 3f), Random.Range(-3, 3f), 0f));
+                    Vector3 dist = playerPos - myPos;
+                    Vector3 ran = new Vector3(Random.Range(-3, 3), Random.Range(-3, 3), 0);
+                    transform.Translate(ran + dist*2);
+                    //transform.Translate(playerDir * 30 + new Vector3(Random.Range(-3, 3f), Random.Range(-3, 3f), 0f));
                 }
                 break;
         }
